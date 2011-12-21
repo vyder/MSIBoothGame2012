@@ -25,9 +25,12 @@ class Snoopy:
         self.rect.bottom = GAME_HEIGHT
         
         self.speed = 10
+        self.bobbingAmplitude = 10
+        self.bobbingSpeed = self.bobbingAmplitude*2
 
     def keepFlying(self):
-        newRect = self.rect.move([self.speed, 0])
+        self.bobbingSpeed -= self.bobbingSpeed
+        newRect = self.rect.move([self.speed, self.bobbingSpeed])
         self.rect = newRect
         
         if(self.isAtEdge()):
