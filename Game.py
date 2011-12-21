@@ -24,7 +24,7 @@ class Snoopy:
         # Position him at the bottom of the game screen
         self.rect.bottom = GAME_HEIGHT
         
-        self.speed = 10
+        self.speed = 5
 
     def keepFlying(self):
         newRect = self.rect.move([self.speed, 0])
