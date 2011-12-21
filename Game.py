@@ -24,15 +24,26 @@ class Snoopy:
         # Position him at the bottom of the game screen
         self.rect.bottom = GAME_HEIGHT
         
-        self.speed = 5
+
+        self.speed = 10
+        self.bobbingAmplitude = 2
+        self.bobbingSpeed = self.bobbingAmplitude*2
 
     def keepFlying(self):
-        newRect = self.rect.move([self.speed, 0])
-        self.rect = newRect
-        
-        if(self.isAtEdge()):
-            self.flipImage()
-            self.speed = -self.speed
+		bob = random.randint(1,3)
+		
+		newRect = self.rect.move([self.speed, self.bobbingSpeed])
+		if bob == 3:
+			newRect = self.rect.move([self.speed, self.bobbingSpeed])
+			self.bobbingSpeed = -self.bobbingSpeed
+		else:
+			newRect = self.rect.move([self.speed,0])
+		
+		self.rect = newRect
+		
+		if(self.isAtEdge()):
+			self.flipImage()
+			self.speed = -self.speed
 
     def isAtEdge(self):
         return (self.isAtLeftEdge() or self.isAtRightEdge())
