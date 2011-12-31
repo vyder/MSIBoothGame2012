@@ -26,12 +26,15 @@ class Snoopy:
         
         self.speed = 10
 
+    def move(self, keys):
+        
+
     def keepFlying(self):
         newRect = self.rect.move([self.speed, 0])
         self.rect = newRect
         
         if(self.isAtEdge()):
-            self.flipImage()
+            self.turnAround()
             self.speed = -self.speed
 
     def isAtEdge(self):
@@ -43,7 +46,7 @@ class Snoopy:
     def isAtRightEdge(self):
         return (self.rect.right > GAME_WIDTH)
         
-    def flipImage(self):
+    def turnAround(self):
         self.image = pygame.transform.flip(self.image, True, False)
 
 class Game:
@@ -61,12 +64,16 @@ class Game:
         runGame = True
         while runGame:
             self.screen.fill(black)
+            
+            keys = pygame.key.get_pressed()
+            
             for event in pygame.event.get():
                 if event.type == QUIT:
                     runGame = False
                     break
             
-            snoopy.keepFlying()
+            # snoopy.keepFlying()
+            snoopy.move(keys)
             self.draw(snoopy)
             pygame.display.update()
 
