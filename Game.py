@@ -3,6 +3,8 @@ from pygame.locals import *
 
 GAME_WIDTH = 1250
 GAME_HEIGHT = 750
+LEFT_KEY = pygame.K_LEFT
+RIGHT_KEY = pygame.K_RIGHT
 
 class Snoopy:
     def __init__(self, game):
@@ -27,7 +29,16 @@ class Snoopy:
         self.speed = 10
 
     def move(self, keys):
+        if keys and (self.isGoingLeft() and keys[RIGHT_KEY] or self.isGoingRight() and keys[LEFT_KEY]):
+            self.turnAround()
         
+        self.keepFlying()
+        
+    def isGoingLeft(self):
+        return self.speed < 0
+        
+    def isGoingRight(self):
+        return self.speed > 0
 
     def keepFlying(self):
         newRect = self.rect.move([self.speed, 0])
@@ -35,7 +46,6 @@ class Snoopy:
         
         if(self.isAtEdge()):
             self.turnAround()
-            self.speed = -self.speed
 
     def isAtEdge(self):
         return (self.isAtLeftEdge() or self.isAtRightEdge())
@@ -48,6 +58,7 @@ class Snoopy:
         
     def turnAround(self):
         self.image = pygame.transform.flip(self.image, True, False)
+        self.speed = -self.speed
 
 class Game:
     def run(self, width, height):
@@ -65,12 +76,13 @@ class Game:
         while runGame:
             self.screen.fill(black)
             
-            keys = pygame.key.get_pressed()
-            
+            keys = None
             for event in pygame.event.get():
                 if event.type == QUIT:
                     runGame = False
                     break
+                elif event.type == KEYDOWN:
+                    keys = pygame.key.get_pressed()
             
             # snoopy.keepFlying()
             snoopy.move(keys)
