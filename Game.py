@@ -7,58 +7,70 @@ LEFT_KEY = pygame.K_LEFT
 RIGHT_KEY = pygame.K_RIGHT
 
 class Snoopy(object):
-    def __init__(self, game):
-        # Game to which this snoopy belongs to
-        self.game = game
+	def __init__(self, game):
+		# Game to which this snoopy belongs to
+		self.game = game
 
-        # Get snoopy's image
-        self.image = pygame.image.load(os.path.join("assets/images", "snoopy.png"))
+		# Get snoopy's image
+		self.image = pygame.image.load(os.path.join("assets/images", "snoopy.png"))
 
-        # Resize the huge snoopy
-        self.rect = self.image.get_rect()
-        height = self.rect.height
-        width = self.rect.width
-        self.image = pygame.transform.scale(self.image, (width/2, height/2))
+		# Resize the huge snoopy
+		self.rect = self.image.get_rect()
+		height = self.rect.height
+		width = self.rect.width
+		self.image = pygame.transform.scale(self.image, (width/2, height/2))
 
-        # Reset the rect to the resized image's rect
-        self.rect = self.image.get_rect()
-        
-        # Position him at the bottom of the game screen
-        self.rect.bottom = GAME_HEIGHT
-        
-        self.speed = 10
+		# Reset the rect to the resized image's rect
+		self.rect = self.image.get_rect()
 
-    def move(self, keys):
-        if keys and (self.isGoingLeft() and keys[RIGHT_KEY] or self.isGoingRight() and keys[LEFT_KEY]):
-            self.turnAround()
-        
-        self.keepFlying()
-        
-    def isGoingLeft(self):
-        return self.speed < 0
-        
-    def isGoingRight(self):
-        return self.speed > 0
+		# Position him at the bottom of the game screen
+		self.rect.bottom = GAME_HEIGHT
 
-    def keepFlying(self):
-        newRect = self.rect.move([self.speed, 0])
-        self.rect = newRect
-        
-        if(self.isAtEdge()):
-            self.turnAround()
 
-    def isAtEdge(self):
-        return (self.isAtLeftEdge() or self.isAtRightEdge())
+		self.speed = 10
+		self.bobbingAmplitude = 2
+		self.bobbingSpeed = self.bobbingAmplitude*2
 
-    def isAtLeftEdge(self):
-        return (self.rect.left < 0)
+	def move(self, keys):
+		if keys and (self.isGoingLeft() and keys[RIGHT_KEY] or self.isGoingRight() and keys[LEFT_KEY]):
+			self.turnAround()
 
-    def isAtRightEdge(self):
-        return (self.rect.right > GAME_WIDTH)
-        
-    def turnAround(self):
-        self.image = pygame.transform.flip(self.image, True, False)
-        self.speed = -self.speed
+		self.keepFlying()
+
+	def isGoingLeft(self):
+		return self.speed < 0
+
+	def isGoingRight(self):
+		return self.speed > 0
+
+	def keepFlying(self):
+		bob = random.randint(1,3)
+
+		newRect = self.rect.move([self.speed, self.bobbingSpeed])
+		if bob == 3:
+			newRect = self.rect.move([self.speed, self.bobbingSpeed])
+			self.bobbingSpeed = -self.bobbingSpeed
+		else:
+			newRect = self.rect.move([self.speed,0])
+
+		self.rect = newRect
+
+		if(self.isAtEdge()):
+			self.turnAround()
+
+
+	def isAtEdge(self):
+		return (self.isAtLeftEdge() or self.isAtRightEdge())
+
+	def isAtLeftEdge(self):
+		return (self.rect.left < 0)
+
+	def isAtRightEdge(self):
+		return (self.rect.right > GAME_WIDTH)
+
+	def turnAround(self):
+		self.image = pygame.transform.flip(self.image, True, False)
+		self.speed = -self.speed
 
 class Woodstock(object):
 	def __init__(self, game):
