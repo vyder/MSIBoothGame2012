@@ -4,7 +4,7 @@ from pygame.locals import *
 GAME_WIDTH = 1250
 GAME_HEIGHT = 750
 
-class Snoopy:
+class Snoopy(object):
     def __init__(self, game):
         # Game to which this snoopy belongs to
         self.game = game
@@ -26,8 +26,9 @@ class Snoopy:
         
         self.speed = 10
 
-    def move(self, keys):
-        
+
+    #def move(self, keys):
+   
 
     def keepFlying(self):
         newRect = self.rect.move([self.speed, 0])
@@ -49,37 +50,75 @@ class Snoopy:
     def turnAround(self):
         self.image = pygame.transform.flip(self.image, True, False)
 
-class Game:
-    def run(self, width, height):
-        pygame.init()
-        self.screen = pygame.display.set_mode([width, height])
-        
-        # Game Title
-        pygame.display.set_caption("Catch the woodstocks!")
-        snoopy = Snoopy(self)
-        
-        # Define colors
-        black = (0,0,0)
-        
-        runGame = True
-        while runGame:
-            self.screen.fill(black)
-            
-            keys = pygame.key.get_pressed()
-            
-            for event in pygame.event.get():
-                if event.type == QUIT:
-                    runGame = False
-                    break
-            
-            # snoopy.keepFlying()
-            snoopy.move(keys)
-            self.draw(snoopy)
-            pygame.display.update()
+class Woodstock(object):
+	def __init__(self, game):
+		# Game to which this snoopy belongs to
+		self.game = game
+		
+		# The woodstock image
+		self.image = pygame.image.load(os.path.join("assets/images", "woodstock.png"))
+		
+		# Resize the woodstock
+		self.rect = self.image.get_rect()
+		height = self.rect.height
+		width = self.rect.width
+		self.image = pygame.transform.scale(self.image, (width/5, height/5))
 
-    
-    def draw(self,snoopy):
+		# Get the woodstock rect
+		self.rect = self.image.get_rect()
+		
+		# Get a random x axis location
+		width = self.rect.width
+		xcoordinate = random.randint(width/2, GAME_WIDTH - width/2)
+		
+		# Set the woodstock to the top of the game at the x location
+		self.rect.top = 0
+		self.rect.centerx = xcoordinate
+		
+		# Set the speed of the falling woodstock
+		self.speed = 5
+
+
+
+class Game(object):
+	def run(self, width, height):
+		pygame.init()
+		self.screen = pygame.display.set_mode([width, height])
+
+		# Game Title
+		pygame.display.set_caption("Catch the woodstocks!")
+		snoopy = Snoopy(self)
+		woodstock = Woodstock(self)
+
+		# Define colors
+		black = (0,0,0)
+		
+		runGame = True
+		while runGame:
+			self.screen.fill(black)
+
+			if (woodstock.rect.bottom >= GAME_HEIGHT) or woodstock.rect.colliderect(snoopy.rect):
+				woodstock = Woodstock(self)
+
+			keys = pygame.key.get_pressed()
+
+			for event in pygame.event.get():
+				if event.type == QUIT:
+					runGame = False
+					break
+
+			# Move the woodstock
+			woodstock.rect = woodstock.rect.move([0, woodstock.speed])
+
+			snoopy.keepFlying()
+			#snoopy.move(keys)
+			self.draw(snoopy, woodstock)
+			pygame.display.update()
+
+
+	def draw(self,snoopy, woodstock):
 		self.screen.blit(snoopy.image, snoopy.rect)
+		self.screen.blit(woodstock.image, woodstock.rect)
 		pygame.display.update()
 
 game = Game()
