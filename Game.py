@@ -3,6 +3,8 @@ from pygame.locals import *
 
 GAME_WIDTH = 1250
 GAME_HEIGHT = 750
+LEFT_KEY = pygame.K_LEFT
+RIGHT_KEY = pygame.K_RIGHT
 
 class Snoopy(object):
     def __init__(self, game):
@@ -26,9 +28,17 @@ class Snoopy(object):
         
         self.speed = 10
 
-
-    #def move(self, keys):
-   
+    def move(self, keys):
+        if keys and (self.isGoingLeft() and keys[RIGHT_KEY] or self.isGoingRight() and keys[LEFT_KEY]):
+            self.turnAround()
+        
+        self.keepFlying()
+        
+    def isGoingLeft(self):
+        return self.speed < 0
+        
+    def isGoingRight(self):
+        return self.speed > 0
 
     def keepFlying(self):
         newRect = self.rect.move([self.speed, 0])
@@ -36,7 +46,6 @@ class Snoopy(object):
         
         if(self.isAtEdge()):
             self.turnAround()
-            self.speed = -self.speed
 
     def isAtEdge(self):
         return (self.isAtLeftEdge() or self.isAtRightEdge())
@@ -49,6 +58,7 @@ class Snoopy(object):
         
     def turnAround(self):
         self.image = pygame.transform.flip(self.image, True, False)
+        self.speed = -self.speed
 
 class Woodstock(object):
 	def __init__(self, game):
@@ -111,7 +121,7 @@ class Game(object):
 			woodstock.rect = woodstock.rect.move([0, woodstock.speed])
 
 			snoopy.keepFlying()
-			#snoopy.move(keys)
+			snoopy.move(keys)
 			self.draw(snoopy, woodstock)
 			pygame.display.update()
 
