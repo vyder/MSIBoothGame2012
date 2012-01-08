@@ -127,6 +127,10 @@ class Game(object):
 
 
 	def draw(self,snoopy, woodstock):
+		skyimage = pygame.image.load(os.path.join("assets/images/sky", "sky1.jpg"))
+		skyimage = pygame.transform.scale(skyimage, (GAME_WIDTH, GAME_HEIGHT))
+		skyrect = skyimage.get_rect()
+		self.screen.blit(skyimage, skyrect)
 		self.screen.blit(snoopy.image, snoopy.rect)
 		self.screen.blit(woodstock.image, woodstock.rect)
 		pygame.display.update()
