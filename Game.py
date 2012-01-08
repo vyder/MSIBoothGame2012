@@ -73,7 +73,7 @@ class Snoopy(object):
 		self.speed = -self.speed
 
 class Woodstock(object):
-	def __init__(self, game):
+	def __init__(self, game, counter):
 		# Game to which this snoopy belongs to
 		self.game = game
 		
@@ -98,9 +98,32 @@ class Woodstock(object):
 		self.rect.centerx = xcoordinate
 		
 		# Set the speed of the falling woodstock
-		self.speed = 5
+		# vspeed: vertical speed
+		
+		self.vspeed = counter*4
+		
+		# hspeed: horizontal speed
+		self.hspeed = random.randint(-15,15)
 
+	def move(self):
+		
+		self.rect = self.rect.move([self.hspeed, self.vspeed])
 
+		if(self.isAtEdge()):
+			self.turnAround()
+
+	def isAtEdge(self):
+		return (self.isAtLeftEdge() or self.isAtRightEdge())
+
+	def isAtLeftEdge(self):
+		return (self.rect.left < 0)
+
+	def isAtRightEdge(self):
+		return (self.rect.right > GAME_WIDTH)
+
+	def turnAround(self):
+		self.image = pygame.transform.flip(self.image, True, False)
+		self.hspeed = -self.hspeed
 
 class Game(object):
 	def run(self, width, height):
@@ -109,18 +132,20 @@ class Game(object):
 
 		# Game Title
 		pygame.display.set_caption("Catch the woodstocks!")
+		
+		# Initialize snoopy and the woodstocks
 		snoopy = Snoopy(self)
-		woodstock = Woodstock(self)
+		woodstocks = self.initWoodstocks()
 
 		# Define colors
 		black = (0,0,0)
 		
 		runGame = True
 		while runGame:
-			self.screen.fill(black)
-
-			if (woodstock.rect.bottom >= GAME_HEIGHT) or woodstock.rect.colliderect(snoopy.rect):
-				woodstock = Woodstock(self)
+			
+			self.woodstockCollide(woodstocks, snoopy)
+			#if (woodstock.rect.bottom >= GAME_HEIGHT) or woodstock.rect.colliderect(snoopy.rect):
+			#	woodstock = Woodstock(self)
 
 			keys = pygame.key.get_pressed()
 
@@ -130,22 +155,50 @@ class Game(object):
 					break
 
 			# Move the woodstock
-			woodstock.rect = woodstock.rect.move([0, woodstock.speed])
+			self.moveWoodstocks(woodstocks)
 
 			snoopy.keepFlying()
 			snoopy.move(keys)
-			self.draw(snoopy, woodstock)
+			self.draw(snoopy, woodstocks)
 			pygame.display.update()
-
-
-	def draw(self,snoopy, woodstock):
+	
+	def initWoodstocks(self):
+		# The 4 speeds are 4, 8, 12, 16
+		woodstocks = []
+		counter = 1
+		while counter <= 4:
+			woodstocks += [Woodstock(self, counter)]
+			counter += 1
+		
+		return woodstocks
+	
+	#	Checks if any of the woodstocks have collided with snoopy
+	def woodstockCollide(self, woodstocks, snoopy):
+		for i in xrange(len(woodstocks)):
+			if (woodstocks[i].rect.bottom >= GAME_HEIGHT) or woodstocks[i].rect.colliderect(snoopy.rect):
+				woodstocks[i] = Woodstock(self, (i+1))
+	
+	def moveWoodstocks(self, woodstocks):
+		for i in xrange(len(woodstocks)):
+			woodstocks[i].move()
+		
+		
+	def draw(self,snoopy, woodstocks):
+		self.drawSky()
+		self.drawWoodstocks(woodstocks)
+		self.screen.blit(snoopy.image, snoopy.rect)
+		
+		pygame.display.update()
+	
+	def drawSky(self):
 		skyimage = pygame.image.load(os.path.join("assets/images/sky", "sky1.jpg"))
 		skyimage = pygame.transform.scale(skyimage, (GAME_WIDTH, GAME_HEIGHT))
 		skyrect = skyimage.get_rect()
 		self.screen.blit(skyimage, skyrect)
-		self.screen.blit(snoopy.image, snoopy.rect)
-		self.screen.blit(woodstock.image, woodstock.rect)
-		pygame.display.update()
-
+		
+	def drawWoodstocks(self, woodstocks):
+		for i in xrange(len(woodstocks)):
+			self.screen.blit(woodstocks[i].image, woodstocks[i].rect)
+		
 game = Game()
 game.run(GAME_WIDTH,GAME_HEIGHT)
