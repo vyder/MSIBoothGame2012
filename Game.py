@@ -7,6 +7,7 @@ if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
 
 Q = pygame.K_q
+COLOR_BLACK = (0,0,0)
 
 class Game(object):
     def __init__(self, width, height):
@@ -15,8 +16,17 @@ class Game(object):
         self.height = height
         self.screen = pygame.display.set_mode([width, height])
         
+        self.score = 0
+
         # Game Title
         pygame.display.set_caption("Catch the woodstocks!")
+
+        # font = pygame.font.Font("peanuts.tff", 28)
+        self.font = pygame.font.Font("cella.otf", 28)
+        
+        # Render the text with Anti-aliasing
+        self.scoreText = self.font.render("Score: " + str(self.score), True, COLOR_BLACK)
+        self.scorepos = self.scoreText.get_rect(left = 40, top = 20)
         
         # Initialize snoopy and the woodstocks
         self.snoopy = Snoopy(self)
@@ -62,6 +72,8 @@ class Game(object):
         for w in self.woodstocks:
             # Woodstock is dead if he hits the bottom or if Snoopy catches him
             if w.isAtBottomEdge() or w.hasCollidedWith(self.snoopy):
+                if(w.hasCollidedWith(self.snoopy)):
+                    self.score += 1
                 vspeed = w.vspeed
                 self.woodstocks.remove(w)
                 w = Woodstock(self)
@@ -78,6 +90,9 @@ class Game(object):
         for w in self.woodstocks:
             self.screen.blit(w.image, w.rect)
         self.screen.blit(self.snoopy.image, self.snoopy.rect)
+        
+        self.scoreText = self.font.render("Score: " + str(self.score), True, COLOR_BLACK)
+        self.screen.blit(self.scoreText, self.scorepos)
 
         pygame.display.update()
 
