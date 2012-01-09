@@ -47,13 +47,17 @@ class Game(object):
 
     def createWoodstocks(self):
         # There is one woodstock for each speed
-        speeds = [4, 8, 12, 16]
+        # The first one is vertical speed. Second one is the rotational speed
+        speeds = [(4,10), (8,20), (12,30), (16, 40)]
         woodstocks = []
-        
-        for speed in speeds:
+
+        for speedPair in speeds:
+            speed, rspeed = speedPair
             w = Woodstock(self)
             w.setVSpeed(speed)
+            w.setRSpeed(rspeed)
             woodstocks += [w]
+
 
         return woodstocks
 
@@ -63,9 +67,11 @@ class Game(object):
             # Woodstock is dead if he hits the bottom or if Snoopy catches him
             if w.isAtBottomEdge() or w.hasCollidedWith(self.snoopy):
                 vspeed = w.vspeed
+                rspeed = w.rspeed
                 self.woodstocks.remove(w)
                 w = Woodstock(self)
-                w.setVSpeed = vspeed
+                w.setVSpeed(vspeed)
+                w.setRSpeed(rspeed)
                 self.woodstocks.append(w)
                 
 

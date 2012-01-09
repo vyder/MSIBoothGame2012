@@ -9,12 +9,13 @@ class Woodstock(GameCharacter):
 
         # The woodstock image
         self.image = pygame.image.load(os.path.join("assets/images", "woodstock.png"))
-
+        
         # Resize the woodstock
         self.rect = self.image.get_rect()
         height = self.rect.height
         width = self.rect.width
         self.image = pygame.transform.scale(self.image, (width/5, height/5))
+        self.mainimage = self.image
 
         # Get the woodstock rect
         self.rect = self.image.get_rect()
@@ -32,9 +33,17 @@ class Woodstock(GameCharacter):
 
         # hspeed: horizontal speed
         self.hspeed = random.randint(-15,15)
+        
+        # The current rotated degrees
+        self.currentRotation = 0
 
     
     def move(self):
+        oldcenter = self.rect.center
+        self.currentRotation = (self.currentRotation + self.rspeed) % 360
+        self.image = pygame.transform.rotate(self.mainimage, self.currentRotation)
+        self.rect = self.image.get_rect()
+        self.rect.center = oldcenter
         
         self.rect = self.rect.move([self.hspeed, self.vspeed])
         

@@ -32,16 +32,21 @@ class GameCharacter(object):
         return self.rect.colliderect(otherObject.rect)
     
     def setHSpeed(self, horizontalSpeed):
-        self.setSpeed(horizontalSpeed, None)
+        self.setSpeed(horizontalSpeed, None, None)
 
 
     def setVSpeed(self, verticalSpeed):
-        self.setSpeed(None, verticalSpeed)
+        self.setSpeed(None, verticalSpeed, None)
 
+    def setRSpeed(self, rspeed):
+        self.setSpeed(None, None, rspeed)
 
-    def setSpeed(self, horizontalSpeed, verticalSpeed):
+    def setSpeed(self, horizontalSpeed, verticalSpeed, rspeed):
         if(horizontalSpeed):
             self.hspeed = horizontalSpeed
 
         if(verticalSpeed):
             self.vspeed = verticalSpeed
+
+        if(rspeed):
+            self.rspeed = rspeed
