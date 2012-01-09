@@ -8,6 +8,7 @@ if not pygame.mixer: print 'Warning, sound disabled'
 
 Q = pygame.K_q
 COLOR_BLACK = (0,0,0)
+TIME_UP = pygame.USEREVENT + 1
 
 class Game(object):
     def __init__(self, width, height):
@@ -18,11 +19,16 @@ class Game(object):
         
         self.score = 0
 
+        pygame.event.post(pygame.event.Event(TIME_UP,{}))
+
+        # Start a timer to figure out when the game ends (60 seconds)
+        pygame.time.set_timer(TIME_UP,60000)
+
         # Game Title
         pygame.display.set_caption("Catch the woodstocks!")
 
-        # font = pygame.font.Font("peanuts.tff", 28)
-        self.font = pygame.font.Font("cella.otf", 28)
+        # font = pygame.font.Font(os.path.join("assets/fonts", "peanuts.tff"), 28)
+        self.font = pygame.font.Font(os.path.join("assets/fonts", "cella.otf"), 28)
         
         # Render the text with Anti-aliasing
         self.scoreText = self.font.render("Score: " + str(self.score), True, COLOR_BLACK)
@@ -37,8 +43,8 @@ class Game(object):
         # Define colors
         black = (0,0,0)
 
-        runGame = True
-        while runGame:
+        self.gameOver = False
+        while not self.gameOver:
 
             self.resetDeadWoodstocks()
 
@@ -46,7 +52,7 @@ class Game(object):
 
             for event in pygame.event.get():
                 if event.type == QUIT or keys and keys[Q]:
-                    runGame = False
+                    self.gameOver = True
                     break
 
             self.moveWoodstocks()
