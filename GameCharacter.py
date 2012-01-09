@@ -50,3 +50,6 @@ class GameCharacter(object):
 
         if(rspeed):
             self.rspeed = rspeed
+            
+    def stop(self):
+        self.hspeed = self.vspeed = self.rspeed = 0
