@@ -78,16 +78,22 @@ class Woodstock(object):
 		self.game = game
 		
 		# The woodstock image
-		self.image = pygame.image.load(os.path.join("assets/images", "woodstock.png"))
+		self.mainimage = pygame.image.load(os.path.join("assets/images", "woodstock.png"))
+		
+		
 		
 		# Resize the woodstock
-		self.rect = self.image.get_rect()
+		self.rect = self.mainimage.get_rect()
 		height = self.rect.height
 		width = self.rect.width
-		self.image = pygame.transform.scale(self.image, (width/5, height/5))
-
+		self.mainimage = pygame.transform.scale(self.mainimage, (width/5, height/5))
+		
+		self.image = self.mainimage
+		self.rotatecounter = 1
+		
 		# Get the woodstock rect
-		self.rect = self.image.get_rect()
+		self.rect = self.mainimage.get_rect()
+		
 		
 		# Get a random x axis location
 		width = self.rect.width
@@ -105,13 +111,19 @@ class Woodstock(object):
 		# hspeed: horizontal speed
 		self.hspeed = random.randint(-15,15)
 
-	def move(self):
+	def move(self, degree):
+		oldcenter = self.rect.center
+		degrees = (self.rotatecounter*(degree * 10)) % 360
+		self.image = pygame.transform.rotate(self.mainimage, degrees)
+		self.rect = self.image.get_rect()
+		self.rect.center = oldcenter
 		
 		self.rect = self.rect.move([self.hspeed, self.vspeed])
 
 		if(self.isAtEdge()):
 			self.turnAround()
-
+			
+		self.rotatecounter += 1
 	def isAtEdge(self):
 		return (self.isAtLeftEdge() or self.isAtRightEdge())
 
@@ -177,10 +189,11 @@ class Game(object):
 		for i in xrange(len(woodstocks)):
 			if (woodstocks[i].rect.bottom >= GAME_HEIGHT) or woodstocks[i].rect.colliderect(snoopy.rect):
 				woodstocks[i] = Woodstock(self, (i+1))
+				
 	
 	def moveWoodstocks(self, woodstocks):
 		for i in xrange(len(woodstocks)):
-			woodstocks[i].move()
+			woodstocks[i].move(i+1)
 		
 		
 	def draw(self,snoopy, woodstocks):
