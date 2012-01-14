@@ -47,5 +47,5 @@ class Woodstock(GameCharacter):
         
         self.rect = self.rect.move([self.hspeed, self.vspeed])
         
-        if(self.isAtEdge()):
+        if(self.isAtRightEdge() and self.isGoingRight() or self.isAtLeftEdge() and self.isGoingLeft()):
             self.turnAround()

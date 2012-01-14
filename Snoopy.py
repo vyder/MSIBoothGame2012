@@ -47,5 +47,5 @@ class Snoopy(GameCharacter):
 
         self.rect = newRect
 
-        if(self.isAtEdge()):
+        if(self.isAtRightEdge() and self.isGoingRight() or self.isAtLeftEdge() and self.isGoingLeft()):
             self.turnAround()
