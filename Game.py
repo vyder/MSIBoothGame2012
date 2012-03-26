@@ -85,7 +85,7 @@ class Game(object):
         
             self.snoopy.stop()
             while True:
-                print "drawing the end"
+                #print "drawing the end"
                 self.drawTheEnd()
                 
                 keys = pygame.key.get_pressed()
