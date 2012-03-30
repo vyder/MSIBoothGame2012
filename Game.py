@@ -24,13 +24,17 @@ class Game(object):
         self.height = height
         self.screen = pygame.display.set_mode([width, height])
         
+
+        self.re_init()
+    
+    def re_init(self):
         self.score = 0
-        self.totalTime = 60
+        self.totalTime = 10
 
         pygame.event.post(pygame.event.Event(TIME_UP,{}))
 
         # Start a timer to figure out when the game ends (60 seconds)
-        pygame.time.set_timer(TIME_UP,60000)
+        pygame.time.set_timer(TIME_UP,10000)
         self.startTime = pygame.time.get_ticks()
 
         # Game Title
@@ -56,10 +60,12 @@ class Game(object):
         return (pygame.time.get_ticks() - self.startTime)/1000
 
     def run(self):
-        while True:
+        runGame = True
+        
+        while runGame:
             # Define colors
             black = (0,0,0)
-
+            end = True
             self.gameOver = False
             timerIsRunning = False
             while not self.gameOver:
@@ -69,8 +75,8 @@ class Game(object):
                 keys = pygame.key.get_pressed()
 
                 for event in pygame.event.get():
-                    if event.type == QUIT or keys and keys[Q] or timerIsRunning and event.type == TIME_UP:
-                        self.gameOver = True
+                    if timerIsRunning and event.type == TIME_UP or event.type == QUIT or keys and keys[Q]:
+                        self.gameOver = True 
                         break
                 
                     # This code is to fix a wierd glitchy thing the timer does at the start
@@ -84,21 +90,21 @@ class Game(object):
                 pygame.display.update()
         
             self.snoopy.stop()
-            while True:
+            while end:
                 #print "drawing the end"
                 self.drawTheEnd()
                 
                 keys = pygame.key.get_pressed()
                 
                 for event in pygame.event.get():
-                    if event.type == QUIT or keys and keys[ESCAPE]:
+                    if event.type == QUIT or keys and keys[Q]:
                         return
                     if keys and keys[R]:
-                        self.reset()
+                        runGame = True
+                        self.re_init()
+                        end = False
                         break
-
-    def reset():
-        pass
+                pygame.display.update()
         
     def createWoodstocks(self):
         # There is one woodstock for each speed
