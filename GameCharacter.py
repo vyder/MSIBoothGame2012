@@ -53,3 +53,15 @@ class GameCharacter(object):
             
     def stop(self):
         self.hspeed = self.vspeed = self.rspeed = 0
+        
+    def joyStick_isRight(self, joyStick):
+        horizontal = joyStick.get_axis(0)
+        if horizontal >= 0.004:
+            return True
+        return False
+        
+    def joyStick_isLeft(self, joyStick):
+        horizontal = joyStick.get_axis(0)
+        if horizontal <= -0.004:
+            return True
+        return False

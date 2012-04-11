@@ -24,12 +24,17 @@ class Game(object):
         self.height = height
         self.screen = pygame.display.set_mode([width, height])
         
+        
+        
+        
 
         self.re_init()
     
     def re_init(self):
         self.score = 0
         self.totalTime = 10
+        highscore = open("highscore.txt", "r")
+        currentHighScore = highscore.readline()
 
         pygame.event.post(pygame.event.Event(TIME_UP,{}))
 
@@ -48,10 +53,17 @@ class Game(object):
         self.scorepos = self.scoreText.get_rect(left = 40, top = 20)
         self.timerText = self.font.render("Time Left: " + str(self.time_left()), True, COLOR_BLACK)
         self.timerpos = self.timerText.get_rect(left = 40, top = 50)
+        self.highscoreText = self.font.render("High Score: " + currentHighScore, True, COLOR_BLACK)
+        self.highscorepos = self.highscoreText.get_rect(left = self.width-300, top = 20)
         
         # Initialize snoopy and the woodstocks
         self.snoopy = Snoopy(self)
         self.woodstocks = self.createWoodstocks()
+        
+        
+        pygame.joystick.init()
+        
+        
         
     def time_left(self):
         return self.totalTime - self.current_time()
@@ -63,20 +75,30 @@ class Game(object):
         runGame = True
         
         while runGame:
+            joyStick = pygame.joystick.Joystick(0)
+            joyStick.init()
             # Define colors
             black = (0,0,0)
             end = True
             self.gameOver = False
             timerIsRunning = False
             while not self.gameOver:
-
                 self.resetDeadWoodstocks()
 
                 keys = pygame.key.get_pressed()
 
                 for event in pygame.event.get():
                     if timerIsRunning and event.type == TIME_UP or event.type == QUIT or keys and keys[Q]:
-                        self.gameOver = True 
+                        self.gameOver = True
+                        highscore = open("highscore.txt", "r")
+                        currentHighScore = int(highscore.readline())
+                        
+                        #Write the highscore
+                        if currentHighScore < self.score:
+                            highscore = open("highscore.txt", "w")
+                            highscore.write(str(self.score))
+                        
+                        #highscore.write(str(self.score))
                         break
                 
                     # This code is to fix a wierd glitchy thing the timer does at the start
@@ -84,7 +106,7 @@ class Game(object):
                         timerIsRunning = True
 
                 self.moveWoodstocks()
-                self.snoopy.move(keys)
+                self.snoopy.move(joyStick, keys)
             
                 self.draw()
                 pygame.display.update()
@@ -95,11 +117,15 @@ class Game(object):
                 self.drawTheEnd()
                 
                 keys = pygame.key.get_pressed()
-                
+                if joyStick.get_button(0):
+                    runGame = True
+                    self.re_init()
+                    end = False
+                    break
                 for event in pygame.event.get():
                     if event.type == QUIT or keys and keys[Q]:
                         return
-                    if keys and keys[R]:
+                    if keys and keys[R]: #Restart game
                         runGame = True
                         self.re_init()
                         end = False
@@ -148,10 +174,15 @@ class Game(object):
             self.screen.blit(w.image, w.rect)
         self.screen.blit(self.snoopy.image, self.snoopy.rect)
         
+        highscore = open("highscore.txt", "r")
+        currentHighScore = highscore.readline()
+        
         self.scoreText = self.font.render("Score: " + str(self.score), True, COLOR_BLACK)
         self.screen.blit(self.scoreText, self.scorepos)
         self.timerText = self.font.render("Time Left: " + str(self.time_left()), True, COLOR_BLACK)
         self.screen.blit(self.timerText, self.timerpos)
+        self.highscoreText = self.font.render("High Score: " + currentHighScore, True, COLOR_BLACK)
+        self.screen.blit(self.highscoreText, self.highscorepos)
 
         pygame.display.update()
 
