@@ -24,13 +24,17 @@ class Snoopy(GameCharacter):
 
         # Position him at the bottom of the game screen
         self.rect.bottom = self.game.height
+        self.rect.centerx = self.game.width/2
 
         self.hspeed = 10
         self.bobbingAmplitude = 2
         self.bobbingSpeed = self.bobbingAmplitude*2
 
-    def move(self, keys):
+    def move(self, joyStick, keys):
         if keys and (self.isGoingLeft() and keys[RIGHT_KEY] or self.isGoingRight() and keys[LEFT_KEY]):
+            self.turnAround()
+        
+        if (self.isGoingLeft() and self.joyStick_isRight(joyStick) or self.isGoingRight() and self.joyStick_isLeft(joyStick)):
             self.turnAround()
 
         self.keepFlying()
